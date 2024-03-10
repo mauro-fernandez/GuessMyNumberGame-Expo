@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { View, StyleSheet, Alert } from 'react-native'
+import { View, StyleSheet, Alert, Text, FlatList } from 'react-native'
 import { Title } from '../components/ui/Title'
 import { Card } from'../components/ui/Card'
 import { NumberContainer } from '../components/game/NumberContainer'
+import { GuessLogItem } from '../components/game/GuessLogItem'
 import { PrimaryButton } from '../components/ui/PrimaryButton'
 import { InstructionText } from "../components/ui/InstructionText"
 import { Ionicons } from '@expo/vector-icons'
@@ -24,10 +25,11 @@ let maxBoundary = 100
 export const GameScreen = ({userNumber, onGameOver}) => {
     const initialGuess = generateRandomBetween(1,100, userNumber)
     const [currentGuess, setCurrentGuess] = useState(initialGuess)
+    const [guessRounds, setGuessRounds] = useState([initialGuess])
 
     useEffect(() => {
         if(currentGuess === userNumber){
-            onGameOver()
+            onGameOver(guessRounds.length)
         }
     },[currentGuess, userNumber, onGameOver])
     
@@ -48,7 +50,10 @@ export const GameScreen = ({userNumber, onGameOver}) => {
         }
         const newRandomNumber = generateRandomBetween(minBoundary,maxBoundary, currentGuess)
         setCurrentGuess(newRandomNumber)
+        setGuessRounds(prev => [newRandomNumber,...prev])
     }
+
+    const guessRoundsListLength = guessRounds.length
 
     return (
         <View style={styles.screen}>
@@ -69,8 +74,13 @@ export const GameScreen = ({userNumber, onGameOver}) => {
                     </View>
                 </View>
             </Card>
-            <View>
-              
+            <View style={styles.listContainer}>
+              <FlatList
+                data={guessRounds}
+                 renderItem={itemData => <GuessLogItem roundNumber={guessRoundsListLength - itemData.index} guess={itemData.item}/>}
+                 keyExtractor={(item)=> item}
+                 showsVerticalScrollIndicator={false}
+              />
             </View>
         </View>
      )
@@ -90,5 +100,9 @@ const styles = StyleSheet.create({
     },
     InstructionText: {
         marginBottom: 12
+    },
+    listContainer: {
+        flex: 1,
+        padding: 16
     }
 })
