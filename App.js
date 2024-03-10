@@ -10,6 +10,7 @@ import { GameOverScreen } from './screens/GameOverScreen';
 //import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
 import { useFonts } from 'expo-font';
+import { StatusBar } from 'expo-status-bar'
 
 export default function App() {
   const diceImage = (require('./assets/images/diceBackground.png'))
@@ -72,6 +73,8 @@ export default function App() {
   }
 
   return (
+    <>
+    <StatusBar style='light' />
     <LinearGradient colors={[Colors.primary700, Colors.secondary600]} style={styles.rootScreen}>
       <ImageBackground
         source={diceImage}
@@ -84,6 +87,7 @@ export default function App() {
       </SafeAreaView>
       </ImageBackground>
     </LinearGradient>
+    </>
   );
 }
 
