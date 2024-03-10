@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { View, TextInput, StyleSheet, Alert } from "react-native"
+import { View, TextInput, StyleSheet, Alert, Dimensions, useWindowDimensions, KeyboardAvoidingView, ScrollView} from "react-native"
 import { Colors } from "../constants/color"
 import { PrimaryButton } from "../components/ui/PrimaryButton"
 import { Title } from "../components/ui/Title"
@@ -8,6 +8,10 @@ import { InstructionText } from "../components/ui/InstructionText"
 
 export const StartGameScreen = ({onPickNumber}) => {
     const [enteredNumber, setEnteredNumber] = useState('')
+
+    const { width, height } = useWindowDimensions()
+
+    const marginTopDistance = height < 400 ? 30 : 100
 
     const numberInputHandler = (enteredNumber) => {
         setEnteredNumber(enteredNumber)
@@ -29,8 +33,13 @@ export const StartGameScreen = ({onPickNumber}) => {
         onPickNumber(chosenNumber)
     }
 
+    // KeyboardAvoidingView is used for ios, because hte keyboard takes half the screen and 
+    // doesn't have a go back button, like android. Also, it makes the keyboard go away by just tapping
+    // the other half of the screen. Morevoer, the KeyboardAvoidingView has to be inside a ScrollView component
     return (
-        <View style={styles.rootContainer}>
+        <ScrollView style={styles.screen}>
+        <KeyboardAvoidingView style={styles.screen} behavior="position">
+        <View style={[styles.rootContainer,{marginTop: marginTopDistance}]}>
             <Title>Guess My Number</Title>
             <Card>
                 <InstructionText>Enter a Number</InstructionText>
@@ -53,14 +62,20 @@ export const StartGameScreen = ({onPickNumber}) => {
                 </View>
             </Card>
         </View>
+        </KeyboardAvoidingView>
+        </ScrollView>
     )
 }
 
+const deviceHeight = Dimensions.get('window').height
 
 const styles = StyleSheet.create({
+    screen: {
+        flex: 1,
+    },
     rootContainer: {
         flex: 1,
-        marginTop: 100,
+        marginTop: deviceHeight < 400 ? 30 : 100,
         alignItems: 'center',
     },
     numberInput: {
